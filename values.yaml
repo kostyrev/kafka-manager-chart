@@ -16,6 +16,8 @@ service:
   externalPort: 80
   internalPort: 9000
 ingress:
+  tls:
+    enable: false
   enabled: true
   # Used to create an Ingress record.
   hosts:
@@ -48,6 +50,8 @@ kafkaManager:
   # change the zhHosts variable to point to the zk instances.
   useKafkaZookeeper: true
   zkHosts: ""
+  basicAuth:
+    enabled: false
 
 resources: {}
   # If you do want to specify resources for kafka-manager, uncomment the following

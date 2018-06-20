@@ -1,3 +1,11 @@
+
+{{- if .Values.kafkaManager.basicAuth.enabled -}}
+To get password for basicAuthentication run:
+
+kubectl get secret --namespace {{ .Release.Namespace }} {{ template "kafka-manager.fullname" . }} -o jsonpath="{.data.basic-authentication-password}" | base64 --decode; echo
+{{ end }}
+
+
 {{- if .Values.ingress.enabled }}
 Access to the application using the ingress :
 {{- range .Values.ingress.hosts }}

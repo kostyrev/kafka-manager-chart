@@ -1,3 +1,4 @@
+{{- if .Values.kafka.clusters -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -29,3 +30,4 @@ spec:
         - "-c"
         - {{ include "kafka-manager.bootstrapShellCommand" . | quote }}
       restartPolicy: Never
+{{- end -}}

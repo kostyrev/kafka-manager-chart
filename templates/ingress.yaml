@@ -14,6 +14,14 @@ metadata:
       {{ $key }}: {{ $value | quote }}
     {{- end }}
 spec:
+{{- if .Values.ingress.tls.enable }}
+  tls:
+    - secretName: {{ .Release.Name }}-tls
+      hosts:
+    {{- range $host := .Values.ingress.hosts }}
+        - {{ $host }}
+    {{- end -}}
+{{- end }}
   rules:
     {{- range $host := .Values.ingress.hosts }}
     - host: {{ $host }}

@@ -14,6 +14,8 @@ spec:
       labels:
         app: {{ template "kafka-manager.name" . }}
         release: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -22,12 +24,29 @@ spec:
           env:
           - name: "ZK_HOSTS"
             value: {{ include "kafka-manager.zkHosts" . | quote }}
+        {{- if .Values.kafkaManager.basicAuth.enabled }}
+          - name: KAFKA_MANAGER_AUTH_ENABLED
+            value: "true"
+          - name: KAFKA_MANAGER_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "kafka-manager.fullname" . }}
+                key: basic-authentication-password
+        {{- end }}
           ports:
             - containerPort: {{ .Values.service.internalPort }}
+        {{- if .Values.kafkaManager.basicAuth.enabled }}
+          readinessProbe:
+            tcpSocket:
+              port: {{ .Values.service.internalPort }}
+            initialDelaySeconds: 5
+        {{- else -}}
           readinessProbe:
             httpGet:
               path: /
               port: {{ .Values.service.internalPort }}
+            initialDelaySeconds: 5
+        {{- end }}
           resources:
 {{ toYaml .Values.resources | indent 12 }}
     {{- if .Values.nodeSelector }}
